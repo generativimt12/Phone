@@ -141,7 +141,7 @@ class SettingsActivity : SimpleActivity() {
     private fun setupOptionsMenu() {
         binding.settingsToolbar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
-                R.id.calling_accounts -> launchAccountsConfiguration()
+                R.id.calling_accounts -> launchAccountsConfiguration()\n                9001 -> startActivity(Intent(this, IncomingToneActivity::class.java))
                 else -> return@setOnMenuItemClickListener false
             }
             return@setOnMenuItemClickListener true
