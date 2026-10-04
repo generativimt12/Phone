@@ -37,7 +37,7 @@ class CallService : InCallService() {
         CallManager.onCallAdded(call)
         CallManager.inCallService = this
         call.registerCallback(callListener)
-        if (!call.isOutgoing() && call.state == Call.STATE_RINGING) {
+        if (call.state == Call.STATE_RINGING) {
             IncomingToneController.start(this, call)
         }
 
