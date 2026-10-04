@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - custom-ringtone-physical-keys
+  pull_request:
   workflow_dispatch:
 
 jobs:
