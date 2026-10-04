@@ -134,6 +134,7 @@ class SettingsActivity : SimpleActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menu.add(0, 9001, 100, "צלצול שיחה נכנסת")
         updateMenuItemColors(menu)
         return super.onCreateOptionsMenu(menu)
     }
@@ -141,7 +142,8 @@ class SettingsActivity : SimpleActivity() {
     private fun setupOptionsMenu() {
         binding.settingsToolbar.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
-                R.id.calling_accounts -> launchAccountsConfiguration()\n                9001 -> startActivity(Intent(this, IncomingToneActivity::class.java))
+                R.id.calling_accounts -> launchAccountsConfiguration()
+                9001 -> startActivity(Intent(this, IncomingToneActivity::class.java))
                 else -> return@setOnMenuItemClickListener false
             }
             return@setOnMenuItemClickListener true
