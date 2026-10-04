@@ -8,8 +8,6 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import org.fossify.commons.activities.SimpleActivity
-import org.fossify.commons.extensions.setupTopAppBar
-import org.fossify.commons.helpers.NavigationIcon
 import org.fossify.phone.helpers.IncomingToneController
 
 class IncomingToneActivity : SimpleActivity() {
@@ -72,7 +70,6 @@ class IncomingToneActivity : SimpleActivity() {
         }
         root.addView(test, LinearLayout.LayoutParams(-1, -2))
         setContentView(root)
-        setupTopAppBar(root, NavigationIcon.Arrow)
         updateStatus()
     }
 
