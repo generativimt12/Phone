@@ -1,0 +1,34 @@
+name: Build APK
+
+on:
+  push:
+    branches:
+      - custom-ringtone-physical-keys
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+
+      - name: Build core debug APK
+        run: ./gradlew :app:assembleCoreDebug --stacktrace
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: phone-core-debug-apk
+          path: app/build/outputs/apk/core/debug/*.apk
+          if-no-files-found: error

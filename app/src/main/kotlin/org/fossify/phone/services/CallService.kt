@@ -8,10 +8,10 @@ import org.fossify.commons.extensions.hasPermission
 import org.fossify.commons.helpers.PERMISSION_POST_NOTIFICATIONS
 import org.fossify.phone.activities.CallActivity
 import org.fossify.phone.extensions.config
-import org.fossify.phone.extensions.isOutgoing
 import org.fossify.phone.extensions.keyguardManager
 import org.fossify.phone.extensions.powerManager
 import org.fossify.phone.helpers.CallManager
+import org.fossify.phone.helpers.IncomingToneController
 import org.fossify.phone.helpers.CallNotificationManager
 import org.fossify.phone.helpers.NoCall
 import org.fossify.phone.models.Events
@@ -23,6 +23,9 @@ class CallService : InCallService() {
     private val callListener = object : Call.Callback() {
         override fun onStateChanged(call: Call, state: Int) {
             super.onStateChanged(call, state)
+            if (state != Call.STATE_RINGING) {
+                IncomingToneController.stop()
+            }
             if (state == Call.STATE_DISCONNECTED || state == Call.STATE_DISCONNECTING) {
                 callNotificationManager.cancelNotification()
             } else {
@@ -36,11 +39,14 @@ class CallService : InCallService() {
         CallManager.onCallAdded(call)
         CallManager.inCallService = this
         call.registerCallback(callListener)
+        if (call.state == Call.STATE_RINGING) {
+            IncomingToneController.start(this, call)
+        }
 
         // Incoming/Outgoing (locked): high priority (FSI)
         // Incoming (unlocked): if user opted in, low priority ➜ manual activity start, otherwise high priority (FSI)
         // Outgoing (unlocked): low priority ➜ manual activity start
-        val isIncoming = !call.isOutgoing()
+        val isIncoming = call.state == Call.STATE_RINGING
         val isDeviceLocked = !powerManager.isInteractive || keyguardManager.isDeviceLocked
         val lowPriority = when {
             isIncoming && isDeviceLocked -> false
@@ -67,6 +73,7 @@ class CallService : InCallService() {
 
     override fun onCallRemoved(call: Call) {
         super.onCallRemoved(call)
+        IncomingToneController.stop()
         call.unregisterCallback(callListener)
         val wasPrimaryCall = call == CallManager.getPrimaryCall()
         CallManager.onCallRemoved(call)
@@ -92,6 +99,7 @@ class CallService : InCallService() {
 
     override fun onDestroy() {
         super.onDestroy()
+        IncomingToneController.stop()
         callNotificationManager.cancelNotification()
     }
 }

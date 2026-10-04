@@ -638,4 +638,34 @@ class MainActivity : SimpleActivity() {
     fun refreshCallLog(event: Events.RefreshCallLog) {
         getRecentsFragment()?.refreshItems()
     }
+    override fun onKeyDown(keyCode: Int, event: android.view.KeyEvent): Boolean {
+        if (event.repeatCount > 0) return true
+        if (keyCode == android.view.KeyEvent.KEYCODE_CALL) {
+            if (config.showTabs and TAB_CALL_HISTORY > 0) {
+                binding.viewPager.currentItem = getAllFragments().lastIndex
+            }
+            return true
+        }
+        val digit = when (keyCode) {
+            android.view.KeyEvent.KEYCODE_0 -> '0'
+            android.view.KeyEvent.KEYCODE_1 -> '1'
+            android.view.KeyEvent.KEYCODE_2 -> '2'
+            android.view.KeyEvent.KEYCODE_3 -> '3'
+            android.view.KeyEvent.KEYCODE_4 -> '4'
+            android.view.KeyEvent.KEYCODE_5 -> '5'
+            android.view.KeyEvent.KEYCODE_6 -> '6'
+            android.view.KeyEvent.KEYCODE_7 -> '7'
+            android.view.KeyEvent.KEYCODE_8 -> '8'
+            android.view.KeyEvent.KEYCODE_9 -> '9'
+            android.view.KeyEvent.KEYCODE_STAR -> '*'
+            android.view.KeyEvent.KEYCODE_POUND -> '#'
+            else -> null
+        }
+        if (digit != null) {
+            launchDialpad()
+            return true
+        }
+        return super.onKeyDown(keyCode, event)
+    }
+
 }

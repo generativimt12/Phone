@@ -907,4 +907,64 @@ class CallActivity : SimpleActivity() {
         binding.dialpadInput.setText("");
         return true;
     }
+    private fun onLegacyPhysicalKeyDown(keyCode: Int, event: android.view.KeyEvent): Boolean {
+        if (event.repeatCount > 0) return true
+        when (keyCode) {
+            android.view.KeyEvent.KEYCODE_CALL -> {
+                if (CallManager.getState() == android.telecom.Call.STATE_RINGING) CallManager.accept()
+                return true
+            }
+            android.view.KeyEvent.KEYCODE_0, android.view.KeyEvent.KEYCODE_1,
+            android.view.KeyEvent.KEYCODE_2, android.view.KeyEvent.KEYCODE_3,
+            android.view.KeyEvent.KEYCODE_4, android.view.KeyEvent.KEYCODE_5,
+            android.view.KeyEvent.KEYCODE_6, android.view.KeyEvent.KEYCODE_7,
+            android.view.KeyEvent.KEYCODE_8, android.view.KeyEvent.KEYCODE_9,
+            android.view.KeyEvent.KEYCODE_STAR, android.view.KeyEvent.KEYCODE_POUND -> {
+                val chars = mapOf(
+                    android.view.KeyEvent.KEYCODE_0 to '0', android.view.KeyEvent.KEYCODE_1 to '1',
+                    android.view.KeyEvent.KEYCODE_2 to '2', android.view.KeyEvent.KEYCODE_3 to '3',
+                    android.view.KeyEvent.KEYCODE_4 to '4', android.view.KeyEvent.KEYCODE_5 to '5',
+                    android.view.KeyEvent.KEYCODE_6 to '6', android.view.KeyEvent.KEYCODE_7 to '7',
+                    android.view.KeyEvent.KEYCODE_8 to '8', android.view.KeyEvent.KEYCODE_9 to '9',
+                    android.view.KeyEvent.KEYCODE_STAR to '*', android.view.KeyEvent.KEYCODE_POUND to '#'
+                )
+                chars[keyCode]?.let { CallManager.keypad(it) }
+                return true
+            }
+        }
+        return super.onKeyDown(keyCode, event)
+    }
+
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+        if (event.repeatCount > 0) return true
+        if (keyCode == KeyEvent.KEYCODE_CALL) {
+            if (CallManager.getState() == Call.STATE_RINGING) {
+                CallManager.accept()
+                return true
+            }
+        }
+
+        val digit = when (keyCode) {
+            KeyEvent.KEYCODE_0 -> '0'
+            KeyEvent.KEYCODE_1 -> '1'
+            KeyEvent.KEYCODE_2 -> '2'
+            KeyEvent.KEYCODE_3 -> '3'
+            KeyEvent.KEYCODE_4 -> '4'
+            KeyEvent.KEYCODE_5 -> '5'
+            KeyEvent.KEYCODE_6 -> '6'
+            KeyEvent.KEYCODE_7 -> '7'
+            KeyEvent.KEYCODE_8 -> '8'
+            KeyEvent.KEYCODE_9 -> '9'
+            KeyEvent.KEYCODE_STAR -> '*'
+            KeyEvent.KEYCODE_POUND -> '#'
+            else -> null
+        }
+        if (digit != null) {
+            if (!binding.dialpadWrapper.isVisible()) showDialpad()
+            dialpadPressed(digit)
+            return true
+        }
+        return super.onKeyDown(keyCode, event)
+    }
 }
