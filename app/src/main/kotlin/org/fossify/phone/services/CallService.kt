@@ -12,6 +12,7 @@ import org.fossify.phone.extensions.isOutgoing
 import org.fossify.phone.extensions.keyguardManager
 import org.fossify.phone.extensions.powerManager
 import org.fossify.phone.helpers.CallManager
+import org.fossify.phone.helpers.IncomingToneController
 import org.fossify.phone.helpers.CallNotificationManager
 import org.fossify.phone.helpers.NoCall
 import org.fossify.phone.models.Events
@@ -36,6 +37,9 @@ class CallService : InCallService() {
         CallManager.onCallAdded(call)
         CallManager.inCallService = this
         call.registerCallback(callListener)
+        if (!call.isOutgoing() && call.state == Call.STATE_RINGING) {
+            IncomingToneController.start(this, call)
+        }
 
         // Incoming/Outgoing (locked): high priority (FSI)
         // Incoming (unlocked): if user opted in, low priority ➜ manual activity start, otherwise high priority (FSI)
@@ -67,6 +71,7 @@ class CallService : InCallService() {
 
     override fun onCallRemoved(call: Call) {
         super.onCallRemoved(call)
+        IncomingToneController.stop()
         call.unregisterCallback(callListener)
         val wasPrimaryCall = call == CallManager.getPrimaryCall()
         CallManager.onCallRemoved(call)
@@ -92,6 +97,7 @@ class CallService : InCallService() {
 
     override fun onDestroy() {
         super.onDestroy()
+        IncomingToneController.stop()
         callNotificationManager.cancelNotification()
     }
 }
