@@ -8,7 +8,6 @@ import org.fossify.commons.extensions.hasPermission
 import org.fossify.commons.helpers.PERMISSION_POST_NOTIFICATIONS
 import org.fossify.phone.activities.CallActivity
 import org.fossify.phone.extensions.config
-import org.fossify.phone.extensions.isOutgoing
 import org.fossify.phone.extensions.keyguardManager
 import org.fossify.phone.extensions.powerManager
 import org.fossify.phone.helpers.CallManager
@@ -24,7 +23,10 @@ class CallService : InCallService() {
     private val callListener = object : Call.Callback() {
         override fun onStateChanged(call: Call, state: Int) {
             super.onStateChanged(call, state)
-            if (state != Call.STATE_RINGING) {\n                IncomingToneController.stop()\n            }\n            if (state == Call.STATE_DISCONNECTED || state == Call.STATE_DISCONNECTING) {
+            if (state != Call.STATE_RINGING) {
+                IncomingToneController.stop()
+            }
+            if (state == Call.STATE_DISCONNECTED || state == Call.STATE_DISCONNECTING) {
                 callNotificationManager.cancelNotification()
             } else {
                 callNotificationManager.setupNotification()
@@ -44,7 +46,7 @@ class CallService : InCallService() {
         // Incoming/Outgoing (locked): high priority (FSI)
         // Incoming (unlocked): if user opted in, low priority ➜ manual activity start, otherwise high priority (FSI)
         // Outgoing (unlocked): low priority ➜ manual activity start
-        val isIncoming = !call.isOutgoing()
+        val isIncoming = call.state == Call.STATE_RINGING
         val isDeviceLocked = !powerManager.isInteractive || keyguardManager.isDeviceLocked
         val lowPriority = when {
             isIncoming && isDeviceLocked -> false
