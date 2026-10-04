@@ -24,7 +24,7 @@ class CallService : InCallService() {
     private val callListener = object : Call.Callback() {
         override fun onStateChanged(call: Call, state: Int) {
             super.onStateChanged(call, state)
-            if (state == Call.STATE_DISCONNECTED || state == Call.STATE_DISCONNECTING) {
+            if (state != Call.STATE_RINGING) {\n                IncomingToneController.stop()\n            }\n            if (state == Call.STATE_DISCONNECTED || state == Call.STATE_DISCONNECTING) {
                 callNotificationManager.cancelNotification()
             } else {
                 callNotificationManager.setupNotification()
