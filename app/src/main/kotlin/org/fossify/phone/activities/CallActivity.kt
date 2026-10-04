@@ -907,4 +907,32 @@ class CallActivity : SimpleActivity() {
         binding.dialpadInput.setText("");
         return true;
     }
+    override fun onKeyDown(keyCode: Int, event: android.view.KeyEvent): Boolean {
+        if (event.repeatCount > 0) return true
+        when (keyCode) {
+            android.view.KeyEvent.KEYCODE_CALL -> {
+                if (CallManager.getState() == android.telecom.Call.STATE_RINGING) CallManager.accept()
+                return true
+            }
+            android.view.KeyEvent.KEYCODE_0, android.view.KeyEvent.KEYCODE_1,
+            android.view.KeyEvent.KEYCODE_2, android.view.KeyEvent.KEYCODE_3,
+            android.view.KeyEvent.KEYCODE_4, android.view.KeyEvent.KEYCODE_5,
+            android.view.KeyEvent.KEYCODE_6, android.view.KeyEvent.KEYCODE_7,
+            android.view.KeyEvent.KEYCODE_8, android.view.KeyEvent.KEYCODE_9,
+            android.view.KeyEvent.KEYCODE_STAR, android.view.KeyEvent.KEYCODE_POUND -> {
+                val chars = mapOf(
+                    android.view.KeyEvent.KEYCODE_0 to '0', android.view.KeyEvent.KEYCODE_1 to '1',
+                    android.view.KeyEvent.KEYCODE_2 to '2', android.view.KeyEvent.KEYCODE_3 to '3',
+                    android.view.KeyEvent.KEYCODE_4 to '4', android.view.KeyEvent.KEYCODE_5 to '5',
+                    android.view.KeyEvent.KEYCODE_6 to '6', android.view.KeyEvent.KEYCODE_7 to '7',
+                    android.view.KeyEvent.KEYCODE_8 to '8', android.view.KeyEvent.KEYCODE_9 to '9',
+                    android.view.KeyEvent.KEYCODE_STAR to '*', android.view.KeyEvent.KEYCODE_POUND to '#'
+                )
+                chars[keyCode]?.let { CallManager.keypad(it) }
+                return true
+            }
+        }
+        return super.onKeyDown(keyCode, event)
+    }
+
 }
