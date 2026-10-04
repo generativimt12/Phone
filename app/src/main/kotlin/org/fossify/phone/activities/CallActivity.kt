@@ -907,7 +907,7 @@ class CallActivity : SimpleActivity() {
         binding.dialpadInput.setText("");
         return true;
     }
-    override fun onKeyDown(keyCode: Int, event: android.view.KeyEvent): Boolean {
+    private fun onLegacyPhysicalKeyDown(keyCode: Int, event: android.view.KeyEvent): Boolean {
         if (event.repeatCount > 0) return true
         when (keyCode) {
             android.view.KeyEvent.KEYCODE_CALL -> {
