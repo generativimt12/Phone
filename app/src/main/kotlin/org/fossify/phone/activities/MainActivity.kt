@@ -641,7 +641,9 @@ class MainActivity : SimpleActivity() {
     override fun onKeyDown(keyCode: Int, event: android.view.KeyEvent): Boolean {
         if (event.repeatCount > 0) return true
         if (keyCode == android.view.KeyEvent.KEYCODE_CALL) {
-            binding.viewPager.currentItem = binding.mainTabsHolder.tabCount - 1
+            if (config.showTabs and TAB_CALL_HISTORY > 0) {
+                binding.viewPager.currentItem = getAllFragments().lastIndex
+            }
             return true
         }
         val digit = when (keyCode) {
